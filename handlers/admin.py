@@ -501,21 +501,27 @@ async def ban(message: Message):
 async def id_info(message: Message):
     if message.from_user.id in ADMINS:
         if message.text.isdigit():
-            chat_id = int(message.text)
-            async with async_session() as session:
-                prem_user = await get_one_premium_user(session, chat_id)
-            if not prem_user:
-                await message.answer("User premiumda mavjud emas")
-            else:
-                start_at_dt = datetime.fromtimestamp(prem_user.start_at, tz)
-                end_at_dt = datetime.fromtimestamp(prem_user.end_at, tz)
-                start_at = start_at_dt.strftime("%d.%m.%Y %H:%M")
-                end_at = end_at_dt.strftime("%d.%m.%Y %H:%M")
-                await message.answer_photo(
-                    photo=prem_user.file_id,
-                    caption="📄 <b>Obuna ma'lumotlari\n\n"
-                                 f"🆔 ID: <code>{chat_id}</code>\n"
-                                 f"⏱ Boshlanish: {start_at}\n"
-                                 f"⏳ Tugash: {end_at}</b>",
-                                 parse_mode="HTML",
-                                reply_markup=prem_user_caption(chat_id))
+            try:
+                chat_id = int(message.text)
+                async with async_session() as session:
+                    prem_user = await get_one_premium_user(session, chat_id)
+                if not prem_user:
+                    await message.answer("User premiumda mavjud emas")
+                else:
+                    start_at_dt = datetime.fromtimestamp(prem_user.start_at, tz)
+                    end_at_dt = datetime.fromtimestamp(prem_user.end_at, tz)
+                    start_at = start_at_dt.strftime("%d.%m.%Y %H:%M")
+                    end_at = end_at_dt.strftime("%d.%m.%Y %H:%M")
+                    await message.answer_photo(
+                        photo=prem_user.file_id,
+                        caption="📄 <b>Obuna ma'lumotlari\n\n"
+                                     f"🆔 ID: <code>{chat_id}</code>\n"
+                                     f"⏱ Boshlanish: {start_at}\n"
+                                     f"⏳ Tugash: {end_at}</b>",
+                                     parse_mode="HTML",
+                                     reply_markup=prem_user_caption(chat_id))
+            except Exception as e:
+                for ADMIN in ADMINS:
+                    await message.bot.send_message(ADMIN, f"{e}\n\n"
+                                          f"admin.py")
+            
