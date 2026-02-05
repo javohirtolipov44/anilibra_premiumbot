@@ -490,6 +490,30 @@ async def ban(message: Message):
 
 
 
+@router.message(F.text.startswith("/delete"))
+async def delete_ban_users(message: Message):
+    if not message.from_user.id in ADMINS:
+        await message.answer("Siz admin emassiz")
+        return
+    chat_id = int(message.text.split(" ")[1])
+    try:
+            await bot.unban_chat_member(PREMIUM_ID, chat_id)
+            await bot.send_message(chat_id, "Obuna muddatingiz tugadi.\n\n"
+                                            f"{PREMIUM_URL}")
+            for ADMIN in ADMINS:
+                await bot.send_message(ADMIN, "Kanaldan o'chirildi\n"
+                                              f"ID : {chat_id}")
+        except Exception as e:
+            for ADMIN in ADMINS:
+                await bot.send_message(ADMIN, f"{e}\n\n"
+                                              f"ID : {chat_id}\n"
+                                              f"admin.py")
+        in_chat = await is_user_in_chat(bot, PREMIUM_ID, chat_id)
+        if not in_chat:
+            await delete_premium_user(session, chat_id)
+            for ADMIN in ADMINS:
+                await bot.send_message(ADMIN, "Bazadan o'chirildi\n"
+                                              f"ID : {chat_id}")
 
 
 
@@ -524,4 +548,5 @@ async def id_info(message: Message):
                 for ADMIN in ADMINS:
                     await message.bot.send_message(ADMIN, f"{e}\n\n"
                                           f"admin.py")
-            
+
+
