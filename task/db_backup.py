@@ -1,0 +1,42 @@
+import os
+import glob
+import asyncio
+from datetime import datetime
+from aiogram import Bot
+from aiogram.types import FSInputFile
+from config import ADMINS
+
+DB_NAME = "anilibra_premiumbot"
+DB_USER = "postgres"
+DB_PASSWORD = "123"
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BACKUP_DIR = os.path.join(BASE_DIR, "backups")
+os.makedirs(BACKUP_DIR, exist_ok=True)
+
+BACKUP_INTERVAL = 60 * 60 * 24  # 24 soat
+
+async def backup_and_send(bot: Bot):
+    today = datetime.now().strftime("%Y-%m-%d")
+    file_path = os.path.join(BACKUP_DIR, f"db_backup_{today}.sql")
+
+    # 🗑 eski backup fayllarni o'chirish
+    for old in glob.glob(f"{BACKUP_DIR}/db_backup_*.sql"):
+        os.remove(old)
+
+    # 📦 backup olish
+    os.system(f"PGPASSWORD='{DB_PASSWORD}' pg_dump -U {DB_USER} {DB_NAME} > {file_path}")
+
+    # 📤 yuborish
+    document = FSInputFile(file_path)
+    await bot.send_document(chat_id=ADMINS[0], document=document)
+
+
+async def scheduler(bot: Bot):
+    while True:
+        try:
+            await backup_and_send(bot)
+        except Exception as e:
+            await bot.send_message(ADMINS[0], f"❗ Backup xato: {e}")
+
+        await asyncio.sleep(BACKUP_INTERVAL)
