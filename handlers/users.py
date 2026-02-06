@@ -50,8 +50,7 @@ async def start_handler(message: Message):
         full_name = message.from_user.full_name
         username = f"@{message.from_user.username}" if message.from_user.username else "Mavjud emas"
         await get_or_create_user(session, chat_id, full_name, username)
-    await message.answer(f"<b>To'liq ma'lumotni quyidagi havola orqali olishingiz mumkin!\n"
-                         f"{INFO_URL}\n</b>",
+    await message.answer(f"<b>🔴 Diqqat! Tolov qilishdan avval ushbu postni yaxshilab oqib chiqing!\n\n🔴 Bank kartalari:\n\nBank nomi: Hamkor Bank \n\nKarta: 9860160134414384 \n\nQabul qiluvchi: Qurbonov Temurbek\n\nTelefon raqam: +998886135606\n\n1. Pasdagi silkaga bosing  https://t.me/+YHjKM-ZTgZhlMzli\nShu kanalga qoshilish sorovini Yuboring\n2.✅ TO'LOV QILISH ✅ ni bosib\nChekni tashlaysz ! Bo'ldi\n\n📌 Obuna tariflari:\n💎 1 oylik - 20 ming so'm\n💎 2 oylik - 40 ming so'm\n💎 3-oylik - 60-ming so'm\n💎 6-oylik- 120-ming so'm\n💎 12-oylik 240-ming so'm\n\n🔴 Bot sizga avtomatik ravishda xizmat korsatadi! Admin faqat chekni haqiyqiy yoki yoqligini tekshiradi xalos! Agar biror bir muammo yoki tushunmagan joyingiz bolsa {INFO_URL} kanalida qollanma bor!</b>",
                          disable_web_page_preview=True,
                          reply_markup=tolov_kb,
                          parse_mode="HTML")
