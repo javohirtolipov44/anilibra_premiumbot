@@ -209,8 +209,12 @@ async def handle_media_callback(call: CallbackQuery, callback_data: MediaCallbac
                                         parse_mode="HTML",
                                         reply_markup=obuna_kb)
         elif "USER_CHANNELS_TOO_MUCH" in e.message:
-            pass
-        # kod yoz noinsof
+            await call.message.reply("<b>Foydalanuvchi kanallari ko'pligi sababli qo'shilmadi</b>",
+                                     parse_mode="HTML")
+            await call.bot.send_message(chat_id,"<b>Sizda kanallar soni ko'pligi sababli premiumga qo'shila olmaysiz\nBirorta kanalni o'chirib qayta chek yuborin\n\n"
+                                        f"{PREMIUM_URL}</b>",
+                                        disable_web_page_preview=True,
+                                        parse_mode="HTML")
         else:
             await call.message.reply(f"{e}")
 
