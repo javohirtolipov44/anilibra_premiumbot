@@ -533,14 +533,26 @@ async def id_info(message: Message):
                     end_at_dt = datetime.fromtimestamp(prem_user.end_at, tz)
                     start_at = start_at_dt.strftime("%d.%m.%Y %H:%M")
                     end_at = end_at_dt.strftime("%d.%m.%Y %H:%M")
-                    await message.answer_photo(
-                        photo=prem_user.file_id,
-                        caption="📄 <b>Obuna ma'lumotlari\n\n"
-                                     f"🆔 ID: <code>{chat_id}</code>\n"
-                                     f"⏱ Boshlanish: {start_at}\n"
-                                     f"⏳ Tugash: {end_at}</b>",
-                                     parse_mode="HTML",
-                                     reply_markup=prem_user_caption(chat_id))
+                    try:
+                        await message.answer_photo(
+                            photo=prem_user.file_id,
+                            caption="📄 <b>Obuna ma'lumotlari\n\n"
+                                         f"🆔 ID: <code>{chat_id}</code>\n"
+                                         f"⏱ Boshlanish: {start_at}\n"
+                                         f"⏳ Tugash: {end_at}</b>",
+                                         parse_mode="HTML",
+                                         reply_markup=prem_user_caption(chat_id))
+                    except TelegramBadRequest as e:
+                        # Agar Photo bo‘lsa, Document qilib bo‘lmaydi
+                        if "can't use file of type Document as Photo" in str(e):
+                            await message.answer_document(
+                            document=prem_user.file_id,
+                            caption="📄 <b>Obuna ma'lumotlari\n\n"
+                                         f"🆔 ID: <code>{chat_id}</code>\n"
+                                         f"⏱ Boshlanish: {start_at}\n"
+                                         f"⏳ Tugash: {end_at}</b>",
+                                         parse_mode="HTML",
+                                         reply_markup=prem_user_caption(chat_id))
             except Exception as e:
                 for ADMIN in ADMINS:
                     await message.bot.send_message(ADMIN, f"{e}\n\n"
